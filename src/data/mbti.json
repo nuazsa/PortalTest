@@ -1,0 +1,47 @@
+{
+  "title": "MBTI Test",
+  "description": "Tes kepribadian berdasarkan Myers-Briggs Type Indicator",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "Dalam situasi sosial, Anda lebih suka:",
+      "options": [
+        "Berinteraksi dengan banyak orang",
+        "Berbicara dengan beberapa orang saja",
+        "Mengamati dari kejauhan",
+        "Mencari tempat yang tenang"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "slider",
+      "question": "Seberapa sering Anda membuat keputusan berdasarkan perasaan daripada logika?",
+      "min": 1,
+      "max": 5
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice",
+      "question": "Ketika menghadapi masalah, Anda cenderung:",
+      "options": [
+        "Mencari solusi praktis yang sudah terbukti",
+        "Mencoba pendekatan baru dan kreatif",
+        "Menganalisis semua kemungkinan",
+        "Bertanya pada orang lain"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "essay",
+      "question": "Ceritakan tentang situasi di mana Anda harus membuat keputusan penting. Bagaimana proses berpikir Anda?"
+    },
+    {
+      "id": 5,
+      "type": "slider",
+      "question": "Seberapa penting bagi Anda untuk memiliki rencana yang terstruktur?",
+      "min": 1,
+      "max": 5
+    }
+  ]
+}

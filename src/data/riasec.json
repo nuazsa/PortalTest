@@ -1,0 +1,51 @@
+{
+  "title": "RIASEC Test",
+  "description": "Tes untuk mengetahui minat karir berdasarkan teori Holland",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "Aktivitas mana yang paling Anda sukai?",
+      "options": [
+        "Memperbaiki mesin atau peralatan",
+        "Melakukan penelitian ilmiah",
+        "Menulis cerita atau puisi",
+        "Mengajar atau melatih orang lain",
+        "Memimpin tim atau organisasi",
+        "Mengatur data dan dokumen"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "slider",
+      "question": "Seberapa tertarik Anda dengan pekerjaan yang melibatkan aktivitas fisik?",
+      "min": 1,
+      "max": 5
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice",
+      "question": "Lingkungan kerja mana yang paling Anda sukai?",
+      "options": [
+        "Workshop atau laboratorium",
+        "Perpustakaan atau ruang penelitian",
+        "Studio seni atau ruang kreatif",
+        "Sekolah atau pusat pelatihan",
+        "Kantor eksekutif",
+        "Kantor administrasi"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "essay",
+      "question": "Jelaskan mengapa Anda tertarik dengan bidang pekerjaan tertentu dan bagaimana Anda melihat diri Anda berkembang di masa depan?"
+    },
+    {
+      "id": 5,
+      "type": "slider",
+      "question": "Seberapa nyaman Anda bekerja dengan teknologi dan peralatan canggih?",
+      "min": 1,
+      "max": 5
+    }
+  ]
+}
