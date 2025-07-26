@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -16,6 +15,8 @@ import {
   FiZap,
   FiTrendingUp,
   FiAward,
+  FiMenu,
+  FiX,
 } from "react-icons/fi"
 
 interface SidebarProps {
@@ -23,6 +24,7 @@ interface SidebarProps {
 }
 
 const tests = [
+    // ... (data tes tetap sama)
   {
     id: "riasec",
     name: "RIASEC Test",
@@ -111,111 +113,160 @@ const tests = [
   },
 ]
 
+interface SidebarContentProps {
+  isCollapsed: boolean;
+  onClose?: () => void;
+}
+
 export default function Sidebar({ children }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
   const pathname = usePathname()
 
-  return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Sidebar */}
-      <div
-        className={`
-        ${isCollapsed ? "w-20" : "w-72"} 
-        bg-white/80 backdrop-blur-xl shadow-2xl transition-all duration-300 ease-in-out flex flex-col border-r border-white/20
-      `}
-      >
-        {/* Header */}
-        <div className="p-6 border-b border-gradient-to-r from-blue-100 to-purple-100">
-          <div className="flex items-center justify-between">
-            {!isCollapsed && (
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Portal Test
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">Temukan potensi diri Anda</p>
-              </div>
-            )}
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 group"
-            >
-              {isCollapsed ? (
-                <FiChevronRight className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
-              ) : (
-                <FiChevronLeft className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
-              )}
-            </button>
-          </div>
-        </div>
+  useEffect(() => {
+    setIsMobileOpen(false)
+  }, [pathname])
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-3 overflow-y-auto">
-          {tests.map((test) => {
-            const Icon = test.icon
-            const isActive = pathname === `/${test.id}`
-            const isAvailable = test.available
-
-            return (
-              <div key={test.id}>
-                {isAvailable ? (
-                  <Link
-                    href={`/${test.id}`}
-                    className={`
-                      flex items-center p-4 rounded-2xl transition-all duration-200 group hover:scale-105
-                      ${
-                        isActive
-                          ? `${test.bgColor} ${test.textColor} shadow-lg ${test.borderColor} border-2`
-                          : "hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 text-gray-700 hover:shadow-md"
-                      }
-                      ${isCollapsed ? "justify-center" : "space-x-4"}
-                    `}
-                  >
-                    <div className={`p-2 rounded-xl bg-gradient-to-r ${test.color} shadow-lg`}>
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    {!isCollapsed && (
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold truncate">{test.name}</div>
-                        <div className="text-sm opacity-75 truncate">{test.description}</div>
-                      </div>
-                    )}
-                  </Link>
-                ) : (
-                  <div
-                    className={`
-                    flex items-center p-4 rounded-2xl text-gray-400 cursor-not-allowed opacity-60
-                    ${isCollapsed ? "justify-center" : "space-x-4"}
-                  `}
-                  >
-                    <div className={`p-2 rounded-xl bg-gradient-to-r ${test.color} opacity-50`}>
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    {!isCollapsed && (
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold truncate">{test.name}</div>
-                        <div className="text-sm truncate">{test.description}</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </nav>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-gradient-to-r from-blue-100 to-purple-100">
+  const SidebarContent = ({ isCollapsed, onClose }: SidebarContentProps) => (
+    <div
+      className={`
+      ${isCollapsed ? "w-20" : "w-72"}
+      bg-white/90 backdrop-blur-xl shadow-2xl transition-all duration-300 ease-in-out flex flex-col border-r border-gray-200/80 h-full
+    `}
+    >
+      {/* Header */}
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between">
           {!isCollapsed && (
-            <div className="text-center">
-              <div className="text-xs text-gray-500">© 2025 Portal Test</div>
-              <div className="text-xs text-gray-400 mt-1">Powered by Mirach Community</div>
-            </div>
+            <Link href="/" className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Portal Test
+              </h1>
+            </Link>
           )}
+          {/* Tombol Close untuk Mobile */}
+          {onClose && (
+             <button
+              onClick={onClose}
+              className="p-2 bg-white rounded-lg shadow-sm border border-gray-200 hover:bg-gray-100 active:scale-95 transition-all lg:hidden"
+            >
+              <FiX className="w-5 h-5 text-gray-600" />
+            </button>
+          )}
+          {/* Tombol Collapse untuk Desktop */}
+          <button
+            onClick={() => setIsDesktopCollapsed(!isDesktopCollapsed)}
+            className="p-2 rounded-xl shadow-md border border-gray-200 hover:bg-gray-100 transition-colors duration-200 hidden lg:block"
+          >
+            {isDesktopCollapsed ? <FiChevronRight className="w-5 h-5 text-gray-700" /> : <FiChevronLeft className="w-5 h-5 text-gray-700" />}
+          </button>
         </div>
       </div>
 
+      {/* Navigation */}
+      <nav className="flex-1 p-3 space-y-2 overflow-y-auto">
+        {tests.map((test) => {
+          const Icon = test.icon
+          const isActive = pathname === `/${test.id}`
+          const isAvailable = test.available
+
+          return (
+            <div key={test.id}>
+              {isAvailable ? (
+                <Link
+                  href={`/${test.id}`}
+                  className={`
+                    flex items-center p-3 rounded-xl transition-all duration-200 group
+                    ${
+                      isActive
+                        ? `${test.bgColor} ${test.textColor} shadow-md ${test.borderColor} border`
+                        : "bg-white hover:bg-gray-100 text-gray-700 border border-gray-200/80 shadow-sm hover:shadow-md"
+                    }
+                    ${isCollapsed ? "justify-center" : "space-x-4"}
+                  `}
+                >
+                  <div className={`p-2 rounded-lg bg-gradient-to-r ${test.color} shadow-sm`}>
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  {!isCollapsed && (
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold truncate">{test.name}</div>
+                      <div className="text-sm opacity-75 truncate">{test.description}</div>
+                    </div>
+                  )}
+                </Link>
+              ) : (
+                <div
+                  className={`
+                  flex items-center p-3 rounded-xl text-gray-400 cursor-not-allowed opacity-70 bg-gray-50
+                  ${isCollapsed ? "justify-center" : "space-x-4"}
+                `}
+                >
+                  <div className={`p-2 rounded-lg bg-gradient-to-r ${test.color} opacity-50`}>
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  {!isCollapsed && (
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold truncate">{test.name}</div>
+                      <div className="text-sm truncate">{test.description}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </nav>
+      
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-200">
+        {!isCollapsed && (
+          <div className="text-center">
+            <div className="text-xs text-gray-500">© 2025 Portal Test</div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar untuk Desktop */}
+      <div className="hidden lg:block">
+        <SidebarContent isCollapsed={isDesktopCollapsed} />
+      </div>
+
+      {/* Sidebar untuk Mobile (Overlay) */}
+      <div
+        className={`fixed inset-0 z-40 transition-transform duration-300 ease-in-out lg:hidden ${
+          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <SidebarContent isCollapsed={false} onClose={() => setIsMobileOpen(false)} />
+      </div>
+
+      {/* Overlay Gelap untuk Mobile */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-30 lg:hidden"
+          onClick={() => setIsMobileOpen(false)}
+          aria-hidden="true"
+        ></div>
+      )}
+
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">{children}</div>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header Mobile dengan Tombol Hamburger */}
+        <div className="lg:hidden p-4 bg-white/80 backdrop-blur-sm border-b flex items-center">
+          <button
+            onClick={() => setIsMobileOpen(!isMobileOpen)}
+            className="p-2 bg-white rounded-xl shadow-md border border-gray-200 hover:bg-gray-100 active:scale-95 transition-all"
+          >
+            <FiMenu className="w-6 h-6 text-gray-700" />
+          </button>
+        </div>
+        {children}
+      </div>
     </div>
   )
 }

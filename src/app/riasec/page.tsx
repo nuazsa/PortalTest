@@ -105,13 +105,13 @@ export default function RiasecPage() {
 
   return (
     <div className="flex-1 overflow-auto bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-      <div className="max-w-3xl mx-auto p-8">
+      <div className="max-w-3xl mx-auto p-4 md:p-8">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">
             {riasecData.title}
           </h1>
-          <p className="text-xl text-gray-600">{riasecData.description}</p>
+          <p className="text-lg md:text-xl text-gray-600">{riasecData.description}</p>
         </div>
 
         {/* Progress Bar */}
@@ -135,23 +135,23 @@ export default function RiasecPage() {
         {/* Question */}
         <div className="relative mb-8">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-cyan-400/10 blur-2xl -z-10"></div>
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 md:p-8 border border-white/20">
             {renderQuestion()}
           </div>
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between">
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
           <button
             onClick={handlePrevious}
             disabled={currentQuestion === 0}
-            className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:hover:shadow-lg"
+            className="w-full sm:w-auto px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:hover:shadow-lg"
           >
             ← Sebelumnya
           </button>
           <button
             onClick={handleNext}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
           >
             {currentQuestion === riasecData.questions.length - 1 ? "🏁 Selesai" : "Selanjutnya →"}
           </button>
