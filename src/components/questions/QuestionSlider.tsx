@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 interface QuestionSliderProps {
   question: string
@@ -19,6 +19,10 @@ export default function QuestionSlider({
 }: QuestionSliderProps) {
   // Gunakan 0 sebagai status "belum dijawab"
   const [value, setValue] = useState<number>(currentAnswer || 0)
+
+  useEffect(() => {
+    setValue(currentAnswer || 0)
+  }, [currentAnswer])
 
   const handleValueChange = (newValue: number) => {
     setValue(newValue)

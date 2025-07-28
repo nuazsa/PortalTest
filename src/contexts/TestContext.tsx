@@ -3,14 +3,14 @@
 import { createContext, useContext, useState, type ReactNode } from "react"
 
 interface Answer {
-  questionId: number
+  questionId: string | number
   answer: string | number
 }
 
 interface TestContextType {
   answers: Record<string, Answer[]>
-  saveAnswer: (testType: string, questionId: number, answer: string | number) => void
-  getAnswer: (testType: string, questionId: number) => string | number | undefined
+  saveAnswer: (testType: string, questionId: string | number, answer: string | number) => void
+  getAnswer: (testType: string, questionId: string | number) => string | number | undefined
   clearAnswers: (testType: string) => void
 }
 
@@ -19,25 +19,27 @@ const TestContext = createContext<TestContextType | undefined>(undefined)
 export function TestProvider({ children }: { children: ReactNode }) {
   const [answers, setAnswers] = useState<Record<string, Answer[]>>({})
 
-  const saveAnswer = (testType: string, questionId: number, answer: string | number) => {
+  const saveAnswer = (testType: string, questionId: string | number, answer: string | number) => {
     setAnswers((prev) => {
       const testAnswers = prev[testType] || []
       const existingIndex = testAnswers.findIndex((a) => a.questionId === questionId)
 
       if (existingIndex >= 0) {
-        testAnswers[existingIndex] = { questionId, answer }
+        // Perbarui jawaban yang sudah ada
+        const updatedAnswers = [...testAnswers]
+        updatedAnswers[existingIndex] = { questionId, answer }
+        return { ...prev, [testType]: updatedAnswers }
       } else {
-        testAnswers.push({ questionId, answer })
-      }
-
-      return {
-        ...prev,
-        [testType]: testAnswers,
+        // Tambahkan jawaban baru
+        return {
+          ...prev,
+          [testType]: [...testAnswers, { questionId, answer }],
+        }
       }
     })
   }
 
-  const getAnswer = (testType: string, questionId: number) => {
+  const getAnswer = (testType: string, questionId: string | number) => {
     const testAnswers = answers[testType] || []
     const answer = testAnswers.find((a) => a.questionId === questionId)
     return answer?.answer

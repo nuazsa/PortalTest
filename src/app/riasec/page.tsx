@@ -1,24 +1,46 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTest } from "@/contexts/TestContext"
-import QuestionMultipleChoice from "@/components/questions/QuestionMultipleChoice"
-import QuestionEssay from "@/components/questions/QuestionEssay"
 import QuestionSlider from "@/components/questions/QuestionSlider"
 import QuestionNavigation from "@/components/QuestionNavigation"
-import riasecData from "@/data/riasec.json"
+import { getRiasecQuestions } from "@/services/api"
+import type { RiasecQuestion } from "@/types/riasec"
 
 export default function RiasecPage() {
+  const [questions, setQuestions] = useState<RiasecQuestion[]>([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [isCompleted, setIsCompleted] = useState(false)
-  const { saveAnswer, getAnswer } = useTest()
+  const { saveAnswer, getAnswer, clearAnswers } = useTest()
 
-  const handleAnswerChange = (answer: string | number) => {
-    saveAnswer("riasec", riasecData.questions[currentQuestion].id, answer)
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const fetchedQuestions = await getRiasecQuestions()
+        setQuestions(fetchedQuestions)
+        setError(null)
+      } catch (err) {
+        setError((err as Error).message)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchQuestions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleAnswerChange = (answer: number) => {
+    if (questions.length > 0) {
+      const questionId = questions[currentQuestion].id
+      saveAnswer("riasec", questionId, answer)
+    }
   }
 
   const handleNext = () => {
-    if (currentQuestion < riasecData.questions.length - 1) {
+    if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
       setIsCompleted(true)
@@ -31,76 +53,63 @@ export default function RiasecPage() {
     }
   }
 
-  const renderQuestion = () => {
-    const question = riasecData.questions[currentQuestion]
-    const currentAnswer = getAnswer("riasec", question.id)
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-center">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-700">Memuat soal...</h2>
+          <p className="text-gray-500">Mohon tunggu sebentar.</p>
+        </div>
+      </div>
+    )
+  }
 
-    switch (question.type) {
-      case "multiple_choice":
-        return (
-          <QuestionMultipleChoice
-            question={question.question}
-            options={question.options || []}
-            onAnswerChange={handleAnswerChange}
-            currentAnswer={currentAnswer as string}
-          />
-        )
-      case "essay":
-        return (
-          <QuestionEssay
-            question={question.question}
-            onAnswerChange={handleAnswerChange}
-            currentAnswer={currentAnswer as string}
-          />
-        )
-      case "slider":
-        return (
-          <QuestionSlider
-            question={question.question}
-            min={question.min}
-            max={question.max}
-            onAnswerChange={handleAnswerChange}
-            currentAnswer={currentAnswer as number}
-          />
-        )
-      default:
-        return null
-    }
+  if (error) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-center text-red-600">
+        <div>
+          <h2 className="text-2xl font-semibold">Gagal Memuat Soal</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    )
   }
 
   if (isCompleted) {
     return (
-      <div className="flex-1 overflow-auto bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-        <div className="max-w-2xl mx-auto p-8">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-blue-400/20 blur-3xl -z-10"></div>
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-12 text-center border border-white/20">
-              <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
-                Tes Selesai! 🎉
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Terima kasih telah menyelesaikan tes RIASEC. Hasil tes Anda sedang diproses dan akan segera tersedia.
-              </p>
-              <div className="space-y-4">
-                <button
-                  onClick={() => {
-                    setCurrentQuestion(0)
-                    setIsCompleted(false)
-                  }}
-                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
-                >
-                  🔄 Ulangi Tes
-                </button>
-              </div>
+        <div className="flex-1 overflow-auto bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+            <div className="max-w-2xl mx-auto p-8">
+            <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-blue-400/20 blur-3xl -z-10"></div>
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-12 text-center border border-white/20">
+                <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
+                    Tes Selesai! 🎉
+                </h2>
+                <p className="text-xl text-gray-600 mb-8">
+                    Terima kasih telah menyelesaikan tes RIASEC. Hasil tes Anda sedang diproses dan akan segera tersedia.
+                </p>
+                <div className="space-y-4">
+                    <button
+                    onClick={() => {
+                        setCurrentQuestion(0)
+                        setIsCompleted(false)
+                        // Bersihkan jawaban saat mengulang tes
+                        clearAnswers("riasec")
+                    }}
+                    className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+                    >
+                    🔄 Ulangi Tes
+                    </button>
+                </div>
+                </div>
             </div>
-          </div>
+            </div>
         </div>
-      </div>
     )
   }
 
@@ -110,65 +119,69 @@ export default function RiasecPage() {
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">
-            {riasecData.title}
+            RIASEC Test
           </h1>
-          <p className="text-lg md:text-xl text-gray-600">{riasecData.description}</p>
+          <p className="text-lg md:text-xl text-gray-600">Tes untuk mengetahui minat karir berdasarkan teori Holland</p>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-8">
-            <div className="flex justify-between text-sm font-medium text-gray-600 mb-3">
-                <span>
-                Pertanyaan {currentQuestion + 1} dari {riasecData.questions.length}
-                </span>
-                <span className="text-blue-600">
-                {Math.round(((currentQuestion + 1) / riasecData.questions.length) * 100)}%
-                </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
-                <div
-                className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-500 shadow-lg"
-                style={{ width: `${((currentQuestion + 1) / riasecData.questions.length) * 100}%` }}
-                ></div>
-            </div>
+          <div className="flex justify-between text-sm font-medium text-gray-600 mb-3">
+            <span>
+              Pertanyaan {currentQuestion + 1} dari {questions.length}
+            </span>
+            <span className="text-blue-600">{Math.round(((currentQuestion + 1) / questions.length) * 100)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+            <div
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-500 shadow-lg"
+              style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+            ></div>
+          </div>
         </div>
 
-        {/* Kontainer Utama untuk Soal dan Navigasi */}
+        {/* Kontainer Utama */}
         <div className="flex flex-col lg:flex-row gap-8">
-          
-          {/* Kolom Kiri: Soal dan Tombol Navigasi Bawah */}
           <div className="flex-1">
             <div className="relative mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-cyan-400/10 blur-2xl -z-10"></div>
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 md:p-8 border border-white/20">
-                {renderQuestion()}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 md:p-8 border border-white/20 min-h-[300px]">
+                {questions.length > 0 && (
+                  <QuestionSlider
+                    question={questions[currentQuestion].question}
+                    onAnswerChange={handleAnswerChange}
+                    currentAnswer={getAnswer("riasec", questions[currentQuestion].id) as number}
+                  />
+                )}
               </div>
             </div>
             <div className="flex flex-col sm:flex-row justify-between gap-4">
               <button
                 onClick={handlePrevious}
                 disabled={currentQuestion === 0}
-                className="w-full sm:w-auto px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:hover:shadow-lg"
+                className="w-full sm:w-auto px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50"
               >
                 ← Sebelumnya
               </button>
               <button
                 onClick={handleNext}
-                className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+                className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700"
               >
-                {currentQuestion === riasecData.questions.length - 1 ? "🏁 Selesai" : "Selanjutnya →"}
+                {currentQuestion === questions.length - 1 ? "🏁 Selesai" : "Selanjutnya →"}
               </button>
             </div>
           </div>
 
-          {/* Kolom Kanan: Navigasi Daftar Soal */}
           <div className="w-full lg:w-64">
-            <QuestionNavigation
-              testType="riasec"
-              totalQuestions={riasecData.questions.length}
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
-            />
+            {questions.length > 0 && (
+                <QuestionNavigation
+                testType="riasec"
+                // totalQuestions should be the number of questions
+                totalQuestions={questions.length}
+                currentQuestion={currentQuestion}
+                setCurrentQuestion={setCurrentQuestion}
+              />
+            )}
           </div>
         </div>
       </div>
