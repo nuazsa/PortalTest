@@ -6,6 +6,7 @@ import QuestionSlider from "@/components/questions/QuestionSlider"
 import QuestionNavigation from "@/components/QuestionNavigation"
 import { getRiasecQuestions } from "@/services/api"
 import type { RiasecQuestion } from "@/types/riasec"
+import { FiAlertCircle } from "react-icons/fi" // Impor ikon baru
 
 export default function RiasecPage() {
   const [questions, setQuestions] = useState<RiasecQuestion[]>([])
@@ -13,11 +14,12 @@ export default function RiasecPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isCompleted, setIsCompleted] = useState(false)
-  const { saveAnswer, getAnswer, clearAnswers } = useTest()
+  const { saveAnswer, getAnswer, toggleDoubtful, clearAnswers } = useTest()
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
+        clearAnswers("riasec")
         const fetchedQuestions = await getRiasecQuestions()
         setQuestions(fetchedQuestions)
         setError(null)
@@ -39,6 +41,13 @@ export default function RiasecPage() {
     }
   }
 
+  const handleToggleDoubtful = () => {
+    if (questions.length > 0) {
+        const questionId = questions[currentQuestion].id
+        toggleDoubtful("riasec", questionId)
+    }
+  }
+
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
@@ -52,6 +61,11 @@ export default function RiasecPage() {
       setCurrentQuestion(currentQuestion - 1)
     }
   }
+
+  // Cek status ragu-ragu untuk soal saat ini
+  const currentAnswerData = questions.length > 0 ? getAnswer("riasec", questions[currentQuestion].id) : undefined
+  const isCurrentDoubtful = currentAnswerData?.isDoubtful || false
+
 
   if (isLoading) {
     return (
@@ -140,7 +154,6 @@ export default function RiasecPage() {
           </div>
         </div>
 
-        {/* Kontainer Utama */}
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1">
             <div className="relative mb-8">
@@ -150,22 +163,39 @@ export default function RiasecPage() {
                   <QuestionSlider
                     question={questions[currentQuestion].question}
                     onAnswerChange={handleAnswerChange}
-                    currentAnswer={getAnswer("riasec", questions[currentQuestion].id) as number}
+                    currentAnswer={currentAnswerData?.answer as number}
                   />
                 )}
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row justify-between gap-4">
+            
+            {/* Tombol Navigasi Bawah */}
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <button
                 onClick={handlePrevious}
                 disabled={currentQuestion === 0}
-                className="w-full sm:w-auto px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50"
+                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 font-semibold"
               >
                 ← Sebelumnya
               </button>
+
+              {/* Tombol Ragu-ragu */}
+              <button
+                onClick={handleToggleDoubtful}
+                className={`
+                  px-6 py-3 border-2 rounded-xl font-semibold flex items-center gap-2 transition-colors
+                  ${isCurrentDoubtful 
+                    ? 'bg-yellow-400 text-white border-yellow-500 hover:bg-yellow-500' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}
+                `}
+              >
+                <FiAlertCircle />
+                Ragu-ragu
+              </button>
+
               <button
                 onClick={handleNext}
-                className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700"
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 font-semibold"
               >
                 {currentQuestion === questions.length - 1 ? "🏁 Selesai" : "Selanjutnya →"}
               </button>

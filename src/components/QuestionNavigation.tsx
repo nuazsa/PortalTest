@@ -1,10 +1,11 @@
 "use client"
 
 import { useTest } from "@/contexts/TestContext"
+import type { Answer } from "@/contexts/TestContext"
 
 interface QuestionNavigationProps {
   testType: string
-  questions: { id: string | number }[] 
+  questions: { id: string | number }[]
   currentQuestion: number
   setCurrentQuestion: (index: number) => void
 }
@@ -23,9 +24,10 @@ export default function QuestionNavigation({
       <div className="flex flex-wrap gap-2">
         {questions.map((question, index) => {
           const questionId = question.id
+          const answerData = getAnswer(testType, questionId)
           
-          const answer = getAnswer(testType, questionId)
-          const isAnswered = answer !== undefined && answer !== "" && answer !== 0
+          const isAnswered = answerData && answerData.answer !== 0 && answerData.answer !== ""
+          const isDoubtful = answerData?.isDoubtful || false
           const isActive = currentQuestion === index
 
           return (
@@ -38,9 +40,11 @@ export default function QuestionNavigation({
                 ${
                   isActive
                     ? "bg-blue-500 text-white border-blue-600 scale-110 shadow-lg"
-                    : isAnswered
-                      ? "bg-green-100 text-green-800 border-green-300 hover:bg-green-200"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                    : isDoubtful
+                      ? "bg-yellow-100 text-yellow-800 border-yellow-300 hover:bg-yellow-200"
+                      : isAnswered
+                        ? "bg-green-100 text-green-800 border-green-300 hover:bg-green-200"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
                 }
               `}
             >
