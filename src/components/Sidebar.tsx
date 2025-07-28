@@ -41,7 +41,7 @@ const tests = [
     name: "MBTI Test",
     description: "Tes Kepribadian",
     icon: FiActivity,
-    available: true,
+    available: false,
     color: "from-purple-500 to-pink-500",
     bgColor: "bg-gradient-to-r from-purple-50 to-pink-50",
     textColor: "text-purple-700",

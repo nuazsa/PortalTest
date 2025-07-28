@@ -176,8 +176,7 @@ export default function RiasecPage() {
             {questions.length > 0 && (
                 <QuestionNavigation
                 testType="riasec"
-                // totalQuestions should be the number of questions
-                totalQuestions={questions.length}
+                questions={questions}
                 currentQuestion={currentQuestion}
                 setCurrentQuestion={setCurrentQuestion}
               />
