@@ -131,12 +131,12 @@ export default function RiasecPage() {
     <div className="flex-1 overflow-auto bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       <div className="max-w-6xl mx-auto p-4 md:p-8">
         {/* Header */}
-        <div className="mb-8 text-center">
+        {/* <div className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">
             RIASEC Test
           </h1>
           <p className="text-lg md:text-xl text-gray-600">Tes untuk mengetahui minat karir berdasarkan teori Holland</p>
-        </div>
+        </div> */}
 
         {/* Progress Bar */}
         <div className="mb-8">
@@ -155,7 +155,7 @@ export default function RiasecPage() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          <div className="flex-1">
+          <div className="flex-2">
             <div className="relative mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-cyan-400/10 blur-2xl -z-10"></div>
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 md:p-8 border border-white/20 min-h-[300px]">
@@ -170,20 +170,21 @@ export default function RiasecPage() {
             </div>
             
             {/* Tombol Navigasi Bawah */}
-            <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center sm:justify-between gap-3">
+              {/* Tombol Sebelumnya */}
               <button
                 onClick={handlePrevious}
                 disabled={currentQuestion === 0}
-                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 font-semibold"
+                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 font-semibold flex-1 sm:flex-none"
               >
-                ← Sebelumnya
+                <span className="hidden sm:inline">← </span>Sebelumnya
               </button>
 
-              {/* Tombol Ragu-ragu */}
+              {/* Tombol Ragu-ragu (hanya di layar besar) */}
               <button
                 onClick={handleToggleDoubtful}
                 className={`
-                  px-6 py-3 border-2 rounded-xl font-semibold flex items-center gap-2 transition-colors
+                  hidden sm:flex px-6 py-3 border-2 rounded-xl font-semibold items-center gap-2 transition-colors
                   ${isCurrentDoubtful 
                     ? 'bg-yellow-400 text-white border-yellow-500 hover:bg-yellow-500' 
                     : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}
@@ -193,16 +194,32 @@ export default function RiasecPage() {
                 Ragu-ragu
               </button>
 
+              {/* Tombol Selanjutnya */}
               <button
                 onClick={handleNext}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 font-semibold"
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 font-semibold flex-1 sm:flex-none"
               >
-                {currentQuestion === questions.length - 1 ? "🏁 Selesai" : "Selanjutnya →"}
+                {currentQuestion === questions.length - 1 ? "🏁 Selesai" : <>Selanjutnya<span className="hidden sm:inline"> →</span></>}
+              </button>
+
+              {/* Tombol Ragu-ragu (hanya di mobile, di baris terpisah) */}
+              <button
+                onClick={handleToggleDoubtful}
+                className={`
+                  sm:hidden col-span-2 w-full px-6 py-3 border-2 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors
+                  ${isCurrentDoubtful 
+                    ? 'bg-yellow-400 text-white border-yellow-500 hover:bg-yellow-500' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}
+                `}
+              >
+                <FiAlertCircle />
+                Ragu-ragu
               </button>
             </div>
+
           </div>
 
-          <div className="w-full lg:w-64">
+          <div className="w-full lg:w-64 flex-1">
             {questions.length > 0 && (
                 <QuestionNavigation
                 testType="riasec"

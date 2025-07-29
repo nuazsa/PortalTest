@@ -1,7 +1,6 @@
 "use client"
 
 import { useTest } from "@/contexts/TestContext"
-import type { Answer } from "@/contexts/TestContext"
 
 interface QuestionNavigationProps {
   testType: string
@@ -21,7 +20,7 @@ export default function QuestionNavigation({
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/20">
       <h3 className="text-lg font-bold text-gray-800 mb-4">Daftar Soal:</h3>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 px-1 max-h-80 overflow-y-auto overflow-x-hidden">
         {questions.map((question, index) => {
           const questionId = question.id
           const answerData = getAnswer(testType, questionId)
